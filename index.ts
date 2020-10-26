@@ -7,11 +7,16 @@ const core = require("@actions/core");
 
 const esyPrefix = core.getInput("esy-prefix");
 const cacheKey = core.getInput("cache-key");
+const manifestKey = core.getInput("manifest");
 
 const run = (name: string, command: string) => {
   core.startGroup(name);
   execSync(command, { stdio: "inherit" });
   core.endGroup();
+};
+const runEsyCommand = (name: string, command: string) => {
+  command = manifestKey ? `esy -P ${manifestKey} ${command}` : `esy ${command}`;
+  return run(name, command);
 };
 
 const main = async () => {
@@ -35,7 +40,7 @@ const main = async () => {
     }
     core.endGroup();
 
-    run("Run esy install", "esy install");
+    runEsyCommand("Run esy install", "install");
 
     if (installCacheKey != installKey) {
       await cache.saveCache(installPath, installKey);
@@ -64,17 +69,17 @@ const main = async () => {
     core.endGroup();
 
     if (!buildCacheKey) {
-      run("Run esy build-dependencies", "esy build-dependencies");
+      runEsyCommand("Run esy build-dependencies", "build-dependencies");
     }
 
-    run("Run esy build", "esy build");
+    runEsyCommand("Run esy build", "build");
 
     if (buildCacheKey != buildKey) {
       await cache.saveCache(depsPath, buildKey);
     }
 
     if (!buildCacheKey) {
-      run("Run esy cleanup", "esy cleanup .");
+      runEsyCommand("Run esy cleanup", "cleanup .");
     }
   } catch (e) {
     core.setFailed(e.message);

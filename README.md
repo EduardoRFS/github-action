@@ -7,6 +7,7 @@ This action runs cached `esy install` and `esy build` in the current directory
 - `cache-key`: **Required** The cache key. Typically `${{ hashFiles('esy.lock/index.json') }}`
 - `esy-prefix`: The prefix of esy folder
 - `working-directory`: Working directory.
+- `manifest`: JSON or opam file to be used
 
 ## Example usage
 
