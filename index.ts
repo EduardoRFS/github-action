@@ -29,6 +29,9 @@ const main = async () => {
     const platform = os.platform();
     const installPath = ["~/.esy/source"];
     const installKey = `source-${platform}-${cacheKey}`;
+
+    runEsyCommand("Run esy solve", "solve");
+
     core.startGroup("Restoring install cache");
     const installCacheKey = await cache.restoreCache(
       installPath,
